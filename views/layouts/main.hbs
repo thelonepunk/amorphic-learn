@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>amorphic learn</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand"><strong>amorphic</strong> <span class="brand-sub">learn</span></a>
+            {{#if user}}
+            <div class="nav-right">
+                <span class="nav-user">{{user.name}}</span>
+                {{#if (eq user.role "admin")}}<a href="/admin" class="nav-link">Admin</a>{{/if}}
+                <a href="/logout" class="nav-link">Log out</a>
+            </div>
+            {{/if}}
+        </div>
+    </nav>
+    <main class="container">
+        {{{body}}}
+    </main>
+</body>
+</html>

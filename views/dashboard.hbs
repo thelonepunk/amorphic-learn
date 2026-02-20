@@ -1,0 +1,31 @@
+<div class="dashboard">
+    <div class="welcome">
+        <h1>Welcome back, {{user.name}}</h1>
+        <p>Pick up where you left off, or start something new.</p>
+    </div>
+    
+    <div class="course-grid">
+        {{#each courses}}
+        <a href="/course/{{this.slug}}" class="course-card">
+            <div class="course-thumb" style="background-image: url('{{this.thumbnail}}')">
+                {{#unless this.thumbnail}}<div class="course-thumb-placeholder">📚</div>{{/unless}}
+            </div>
+            <div class="course-info">
+                <h3>{{this.title}}</h3>
+                <p>{{this.description}}</p>
+                <div class="course-meta">
+                    <span class="lesson-count">{{this.lesson_count}} lessons</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{progressPercent this.completed_count this.lesson_count}}%"></div>
+                    </div>
+                    <span class="progress-text">{{this.completed_count}}/{{this.lesson_count}}</span>
+                </div>
+            </div>
+        </a>
+        {{else}}
+        <div class="empty-state">
+            <p>🎓 No courses available yet. Check back soon!</p>
+        </div>
+        {{/each}}
+    </div>
+</div>

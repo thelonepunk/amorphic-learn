@@ -1,0 +1,90 @@
+<div class="lesson-page">
+    <div class="lesson-sidebar">
+        <a href="/course/{{course.slug}}" class="back-link">← {{course.title}}</a>
+        <div class="sidebar-lessons">
+            {{#each lessons}}
+            <a href="/course/{{../course.slug}}/{{this.slug}}" 
+               class="sidebar-item {{#if this.completed}}completed{{/if}} {{#if (eq this.id ../lesson.id)}}active{{/if}}">
+                <span class="sidebar-num">
+                    {{#if this.completed}}✓{{else}}{{add @index 1}}{{/if}}
+                </span>
+                <span class="sidebar-title">{{this.title}}</span>
+            </a>
+            {{/each}}
+        </div>
+    </div>
+    
+    <div class="lesson-content">
+        <h1>{{lesson.title}}</h1>
+        
+        {{#if lesson.video_url}}
+        <div class="video-container">
+            <video id="lesson-video" controls preload="metadata">
+                <source src="{{lesson.video_url}}" type="video/mp4">
+                Your browser does not support video.
+            </video>
+        </div>
+        {{/if}}
+        
+        {{#if lesson.content}}
+        <div class="lesson-text">
+            {{{lesson.content}}}
+        </div>
+        {{/if}}
+        
+        <div class="lesson-nav">
+            <div class="lesson-complete">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="mark-complete" {{#if lesson.completed}}checked{{/if}}>
+                    <span>Mark as complete</span>
+                </label>
+            </div>
+            <div class="lesson-arrows">
+                {{#if prev}}
+                <a href="/course/{{course.slug}}/{{prev.slug}}" class="btn btn-secondary">← Previous</a>
+                {{/if}}
+                {{#if next}}
+                <a href="/course/{{course.slug}}/{{next.slug}}" class="btn btn-primary">Next →</a>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const lessonId = {{lesson.id}};
+
+// Mark complete
+document.getElementById('mark-complete').addEventListener('change', async (e) => {
+    await fetch(`/api/progress/${lessonId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completed: e.target.checked })
+    });
+});
+
+// Track video position
+const video = document.getElementById('lesson-video');
+if (video) {
+    let lastSave = 0;
+    video.addEventListener('timeupdate', async () => {
+        if (video.currentTime - lastSave > 10) {
+            lastSave = video.currentTime;
+            await fetch(`/api/progress/${lessonId}/time`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ videoTime: video.currentTime })
+            });
+        }
+    });
+    
+    // Auto-mark complete when video ends
+    video.addEventListener('ended', () => {
+        const cb = document.getElementById('mark-complete');
+        if (!cb.checked) {
+            cb.checked = true;
+            cb.dispatchEvent(new Event('change'));
+        }
+    });
+}
+</script>
